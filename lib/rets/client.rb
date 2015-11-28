@@ -88,14 +88,30 @@ module Rets
         find_every(opts)
       rescue NoRecordsFound => e
         if opts.fetch(:no_records_not_an_error, false)
+          Rails.logger.ap "Rets::Client#find_with_given_rety #NoRecordsFound exception  -- retries: #{retries}---- client_progress.no_records_found - opts:"
+          ap "Rets::Client#find_with_given_rety #NoRecordsFound exception -- retries: #{retries}---- client_progress.no_records_found - opts:"
+          Rails.logger.ap opts
+          ap opts
           client_progress.no_records_found
           opts[:count] == COUNT.only ? 0 : []
         else
+          Rails.logger.ap "Rets::Client#find_with_given_rety #NoRecordsFound exception  -- retries: #{retries}---- handle_find_failure - opts:"
+          ap "Rets::Client#find_with_given_rety #NoRecordsFound exception  -- retries: #{retries}---- handle_find_failure - opts:"
+          Rails.logger.ap opts
+          ap opts
           handle_find_failure(retries, opts, e)
         end
       rescue InvalidRequest, HttpError => e
+        Rails.logger.ap "Rets::Client#find_with_given_rety #{e.class.to_s} exception  -- retries: #{retries}---- falling back to #handle_find_failure() - opts:"
+        ap "Rets::Client#find_with_given_rety #{e.class.to_s} exception  -- retries: #{retries}---- falling back to #handle_find_failure() - opts:"
+        Rails.logger.ap opts
+        ap opts
         handle_find_failure(retries, opts, e)
       rescue AuthorizationFailure => e
+        Rails.logger.ap "Rets::Client#find_with_given_rety #{e.class.to_s} exception  -- retries: #{retries}---- falling back to #login then #handle_find_failure() - opts:"
+        ap "Rets::Client#find_with_given_rety #{e.class.to_s} exception  -- retries: #{retries}---- falling back to #login then #handle_find_failure() - opts:"
+        Rails.logger.ap opts
+        ap opts
         login
         handle_find_failure(retries, opts, e)
       end
@@ -103,11 +119,19 @@ module Rets
 
     def handle_find_failure(retries, opts, e)
       if retries < opts.fetch(:max_retries, 3)
+        Rails.logger.ap "Rets::Client#find_with_given_rety #{e.class.to_s} exception  -- retries: #{retries}---- falling back to #login then #handle_find_failure() - opts:"
+        ap "Rets::Client#find_with_given_rety #{e.class.to_s} exception  -- retries: #{retries}---- falling back to #login then #handle_find_failure() - opts:"
+        Rails.logger.ap opts
+        ap opts
         retries += 1
         client_progress.find_with_retries_failed_a_retry(e, retries)
         clean_setup
         find_with_given_retry(retries, opts)
       else
+        Rails.logger.ap "Rets::Client#handle_find_failure - limit exceeded -- retries: #{retries} - opts:"
+        ap "Rets::Client#handle_find_failure - limit exceeded -- retries: #{retries} - opts:"
+        Rails.logger.ap opts
+        ap opts
         client_progress.find_with_retries_exceeded_retry_count(e)
         raise e
       end
