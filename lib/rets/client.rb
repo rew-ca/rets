@@ -254,6 +254,7 @@ module Rets
         client_progress.bad_cached_metadata(cached_metadata)
         @metadata = Metadata::Root.new(logger, retrieve_metadata(types))
         @caching.save(metadata)
+        client_progress.updating_cached_metadata(cached_metadata, metadata)
       end
       @metadata
     end

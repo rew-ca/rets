@@ -44,5 +44,11 @@ module Rets
     def bad_cached_metadata(cached_metadata)
       @logger.info cached_metadata ? "Rets::Client: Cached metadata out of date" : "Rets::Client: Cached metadata unavailable"
     end
+
+    def updating_cached_metadata(old_metadata, new_metadata)
+      old_version_info = old_metadata.try(:version_info) || 'none'
+      new_version_info = new_metadata.try(:version_info) || 'none'
+      @logger.info "Rets::Client updating metadata cache from #{old_version_info} to #{new_version_info}"
+    end
   end
 end

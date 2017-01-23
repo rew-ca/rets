@@ -74,7 +74,11 @@ module Rets
         metadata_types[:system].first.date
       end
 
-      # Wether there exists a more up to date version of the metadata to fetch
+      def version_info
+        "version '#{version}' date:'#{date}'"
+      end
+
+      # Whether there exists a more up to date version of the metadata to fetch
       # is dependant on either a timestamp indicating when the most recent
       # version was published, or a version number. These values may or may
       # not exist on any given rets server.

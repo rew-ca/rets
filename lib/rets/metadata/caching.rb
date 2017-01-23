@@ -52,7 +52,6 @@ module Rets
           @serializer.save(file, metadata.sources)
         end
       end
-      
     end
 
   end
