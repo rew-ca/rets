@@ -22,7 +22,8 @@ module Rets
       @cached_metadata     = options[:metadata]
       @cached_capabilities = options[:capabilities]
       @logger              = options[:logger] || FakeLogger.new
-      @client_progress     = ClientProgressReporter.new(logger, options[:stats_collector], options[:stats_prefix])
+      prog_reporter_class  = options[:progress_reporter_class] || ClientProgressReporter
+      @client_progress     = prog_reporter_class.new(logger, options[:stats_collector], options[:stats_prefix])
       @http_client         = Rets::HttpClient.from_options(options, logger)
       @caching             = Metadata::Caching.make(options)
     end
